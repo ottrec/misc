@@ -37,6 +37,10 @@ jq -cr '
     .activity[] |
     .facilityName = $f[.facilityUrl].name |
     .rawActivity |= gsub(" *[*].*";"") |
+    .isSingleDay = (.weekday // "" | contains("-")) |
+    .startDate = if .isSingleDay then .weekday else .startDate end |
+    .endDate = if .isSingleDay then .weekday else .endDate end |
+    .weekday = if .isSingleDay then (.weekday | strptime("%Y-%m-%d") | strftime("%A") | ascii_downcase) else .weekday end |
     [.facilityName, .rawActivity, .startTime, .endTime, .weekday, .startDate, .endDate] |
     join(" | ")
 ' |
