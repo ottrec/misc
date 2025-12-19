@@ -14,6 +14,10 @@ import (
 	"github.com/pgaskin/ottrec/schema"
 )
 
+var (
+	All = flag.Bool("all", false, "not just line 1")
+)
+
 func main() {
 	flag.Parse()
 
@@ -58,24 +62,33 @@ func main() {
 		}
 	}
 
-	line1Swim := make([]ottrecidx.ScheduleGroupRef, len(line1Pool))
-	for i, fac := range line1Pool {
-		for grp := range fac.ScheduleGroups() {
+	var grps []ottrecidx.ScheduleGroupRef
+	if *All {
+		for grp := range idx.Data().ScheduleGroups() {
 			if strings.Contains(strings.ToLower(grp.GetLabel()), "swim") {
-				if line1Swim[i].Valid() {
-					panic(fmt.Errorf("multiple swim schedule groups for facility %q (%q, %q)", fac.GetName(), line1Swim[i].GetLabel(), grp.GetLabel()))
+				grps = append(grps, grp)
+			}
+		}
+	} else {
+		grps = make([]ottrecidx.ScheduleGroupRef, len(line1Pool))
+		for i, fac := range line1Pool {
+			for grp := range fac.ScheduleGroups() {
+				if strings.Contains(strings.ToLower(grp.GetLabel()), "swim") {
+					if grps[i].Valid() {
+						panic(fmt.Errorf("multiple swim schedule groups for facility %q (%q, %q)", fac.GetName(), grps[i].GetLabel(), grp.GetLabel()))
+					}
+					grps[i] = grp
 				}
-				line1Swim[i] = grp
+			}
+		}
+		for i, grp := range grps {
+			if !grp.Valid() {
+				panic(fmt.Errorf("no match for facility %q schedule group %q", line1PoolName[i], "swim"))
 			}
 		}
 	}
-	for i, grp := range line1Swim {
-		if !grp.Valid() {
-			panic(fmt.Errorf("no match for facility %q schedule group %q", line1PoolName[i], "swim"))
-		}
-	}
 
-	for i, grp := range line1Swim {
+	for i, grp := range grps {
 		if i != 0 {
 			fmt.Println()
 		}
