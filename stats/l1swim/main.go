@@ -15,11 +15,24 @@ import (
 )
 
 var (
-	All = flag.Bool("all", false, "not just line 1")
+	All  = flag.Bool("all", false, "not just line 1")
+	Date = flag.String("date", "", "only schedules valid on the specified date (YYYY-MM-DD)")
 )
 
 func main() {
 	flag.Parse()
+
+	defaultDataDate := "latest"
+
+	var onlyDate time.Time
+	if *Date != "" {
+		t, err := time.Parse("2006-01-02", *Date)
+		if err != nil {
+			panic(err)
+		}
+		onlyDate = t
+		defaultDataDate = onlyDate.UTC().Format("2006-01-02")
+	}
 
 	ctx := context.Background()
 
@@ -27,7 +40,7 @@ func main() {
 		Base: "https://data.ottrec.ca/",
 	}
 
-	pb, err := cl.Get(ctx, cmp.Or(flag.Arg(0), "latest"), "pb")
+	pb, err := cl.Get(ctx, cmp.Or(flag.Arg(0), defaultDataDate), "pb")
 	if err != nil {
 		panic(err)
 	}
@@ -36,6 +49,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("data from", idx.Updated().In(time.Local).Format(time.DateTime))
 
 	// aquatic facilities within a short (~15 minute fast walk, or ~10 minute
 	// bus at least every 20 min) distance of a Line 1 station.
@@ -88,18 +103,50 @@ func main() {
 		}
 	}
 
-	for i, grp := range grps {
-		if i != 0 {
-			fmt.Println()
+	formatTimes := func(r []ottrecidx.TimeRef, list bool) string {
+		var b, tb strings.Builder
+		var t time.Duration
+		w := make(map[time.Weekday]struct{}, 7)
+		for i, x := range r {
+			if i != 0 {
+				tb.WriteString(", ")
+			}
+			cr, _ := x.GetRange()
+			wd, _ := x.GetWeekday()
+			w[wd] = struct{}{}
+			tb.WriteString(wd.String()[:2])
+			tb.WriteString(" ")
+			tb.WriteString(cr.Start.Format(false))
+			t += (time.Duration(cr.End) - time.Duration(cr.Start)) * time.Minute
 		}
+		b.WriteString(t.String())
+		b.WriteString(" total, ")
+		b.WriteString(strconv.Itoa(len(w)))
+		b.WriteString(" weekdays")
+		if list {
+			b.WriteString(" :: ")
+			b.WriteString(tb.String())
+		}
+		return b.String()
+	}
+	var allMorn, allAfter, allEve []ottrecidx.TimeRef
+	for _, grp := range grps {
+		fmt.Println()
 		if grp.Schedules().Empty() {
 			fmt.Printf("%q :: %q :: %s\n", grp.Facility().GetName(), grp.GetLabel(), "no schedules in group, skipping")
 			continue
 		}
 		for sch := range grp.Schedules() {
-			fmt.Println()
-
 			dr, _ := sch.GetDateRange()
+			if !onlyDate.IsZero() {
+				if from, to, ok := sch.ComputeEffectiveDateRange(); ok {
+					if from.After(onlyDate) || onlyDate.After(to) {
+						continue
+					}
+				}
+			}
+
+			fmt.Println()
 			fmt.Printf("%q :: %q :: %s\n", grp.Facility().GetName(), grp.GetLabel(), dr)
 
 			var morn, after, eve []ottrecidx.TimeRef
@@ -115,33 +162,20 @@ func main() {
 					}
 				}
 			}
-			format := func(r []ottrecidx.TimeRef) string {
-				var b strings.Builder
-				var t time.Duration
-				w := make(map[time.Weekday]struct{}, 7)
-				for i, x := range r {
-					if i != 0 {
-						b.WriteString(", ")
-					}
-					cr, _ := x.GetRange()
-					wd, _ := x.GetWeekday()
-					w[wd] = struct{}{}
-					b.WriteString(wd.String()[:2])
-					b.WriteString(" ")
-					b.WriteString(cr.Start.Format(false))
-					t += (time.Duration(cr.End) - time.Duration(cr.Start)) * time.Minute
-				}
-				b.WriteString(" (")
-				b.WriteString(t.String())
-				b.WriteString(" total, ")
-				b.WriteString(strconv.Itoa(len(w)))
-				b.WriteString(" weekdays)")
-				return b.String()
-			}
+			allMorn = append(allMorn, morn...)
+			allAfter = append(allAfter, after...)
+			allEve = append(allEve, eve...)
 
-			fmt.Printf("  morning:   %s\n", format(morn))
-			fmt.Printf("  afternoon: %s\n", format(after))
-			fmt.Printf("  evening:   %s\n", format(eve))
+			fmt.Printf("  morning:   %s\n", formatTimes(morn, true))
+			fmt.Printf("  afternoon: %s\n", formatTimes(after, true))
+			fmt.Printf("  evening:   %s\n", formatTimes(eve, true))
 		}
+	}
+	if !onlyDate.IsZero() {
+		fmt.Println()
+		fmt.Println("summary of scheduled valid on", onlyDate)
+		fmt.Printf("  morning:   %s\n", formatTimes(allMorn, false))
+		fmt.Printf("  afternoon: %s\n", formatTimes(allAfter, false))
+		fmt.Printf("  evening:   %s\n", formatTimes(allEve, false))
 	}
 }
