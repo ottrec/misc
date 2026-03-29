@@ -112,5 +112,5 @@ func listenCopyLatLng(fn func(lat, lng float64)) chromedp.Action {
 
 func search(ctx context.Context, q string) error {
 	buf, _ := json.Marshal(q)
-	return chromedp.Evaluate(`document.getElementById("searchboxinput").value = `+string(buf)+`; document.getElementById("searchbox-searchbutton").click()`, nil).Do(ctx)
+	return chromedp.Evaluate(`document.querySelector("[role=search] input[name=q]").value = `+string(buf)+`; document.querySelector("[role=search] button[aria-label=Search]").click()`, nil).Do(ctx)
 }
