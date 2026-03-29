@@ -139,7 +139,9 @@ func main() {
 		for sch := range grp.Schedules() {
 			dr, _ := sch.GetDateRange()
 			if !onlyDate.IsZero() {
-				if from, to, ok := sch.ComputeEffectiveDateRange(); ok {
+				if r, ok := sch.ComputeEffectiveDateRange(); ok {
+					from, _ := r.From.GoTime(ottrecidx.TZ)
+					to, _ := r.To.GoTime(ottrecidx.TZ)
 					if from.After(onlyDate) || onlyDate.After(to) {
 						continue
 					}
