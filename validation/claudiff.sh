@@ -33,6 +33,7 @@ curl --fail -sL "https://data.ottrec.ca/export/$updated.json" |
 jq -cr --arg now "$updated" '
     INDEX(.facility[]; .url) as $f |
     .activity[] |
+    select(.startTime != null and .endTime != null) |
     .facilityName = $f[.facilityUrl].name |
     .rawActivity |= gsub(" *[*].*";"") |
     .time = .startTime + " - " + .endTime |

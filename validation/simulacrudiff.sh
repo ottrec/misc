@@ -22,7 +22,7 @@ curl --fail -sL "https://github.com/$repo/raw/$sha/$file" |
 jq -cr '
     .[] |
     .dayOfWeek = ["", "monday", "tuesday","wednesday","thursday","friday","saturday","sunday"][.dayOfWeek] |
-    .isDateProbablyAssumedFromNothing = (.periodStartDate | endswith("-01-01")) and (.periodEndDate | endswith("-12-31")) |
+    .isDateProbablyAssumedFromNothing = (.periodStartDate == null and .periodEndDate == null) or ((.periodStartDate | endswith("-01-01")) and (.periodEndDate | endswith("-12-31"))) |
     .periodStartDate = if .isDateProbablyAssumedFromNothing then "" else .periodStartDate end |
     .periodEndDate = if .isDateProbablyAssumedFromNothing then "" else .periodEndDate end |
     [.facility, .activity, .startTime, .endTime, .dayOfWeek, .periodStartDate, .periodEndDate] |
@@ -35,6 +35,7 @@ curl --fail -sL "https://data.ottrec.ca/export/$updated.json" |
 jq -cr '
     INDEX(.facility[]; .url) as $f |
     .activity[] |
+    select(.startTime != null and .endTime != null) |
     .facilityName = $f[.facilityUrl].name |
     .rawActivity |= gsub(" *[*].*";"") |
     .isSingleDay = (.weekday // "" | contains("-")) |
