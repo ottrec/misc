@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pgaskin/ottrec-website/pkg/ottrecdl"
-	"github.com/pgaskin/ottrec-website/pkg/ottrecidx"
-	"github.com/pgaskin/ottrec/schema"
+	"github.com/ottrec/scraper/schema"
+	"github.com/ottrec/website/pkg/ottrecdl"
+	"github.com/ottrec/website/pkg/ottrecidx"
 )
 
 var (

@@ -34,10 +34,10 @@ github.com/ncruces/julianday v1.0.0 h1:fH0OKwa7NWvniGQtxdJRxAgkBMolni2BjDHaWTxqt
 github.com/ncruces/julianday v1.0.0/go.mod h1:Dusn2KvZrrovOMJuOt0TNXL6tB7U2E8kvza5fFc9G7g=
 github.com/orisano/pixelmatch v0.0.0-20220722002657-fb0b55479cde h1:x0TT0RDC7UhAVbbWWBzr41ElhJx5tXPWkIHA2HWPRuw=
 github.com/orisano/pixelmatch v0.0.0-20220722002657-fb0b55479cde/go.mod h1:nZgzbfBr3hhjoZnS66nKrHmduYNpc34ny7RK4z5/HM0=
-github.com/pgaskin/ottrec v0.0.0-20260615074830-539684fe76b5 h1:bO8NFTg19lzB5OFyZ+KHl42MnVnNT7b9xJ3LlWfaN+U=
-github.com/pgaskin/ottrec v0.0.0-20260615074830-539684fe76b5/go.mod h1:N+7yAGCS9+QHNnG+rnBQNvg5GFLwhJpWBhoFQ2vQpmo=
-github.com/pgaskin/ottrec-website v0.0.0-20260616024946-5344d4d91d06 h1:pX6l35NJYO6nD40crhqL4RHklg0yqOZOGT18rog3Kb0=
-github.com/pgaskin/ottrec-website v0.0.0-20260616024946-5344d4d91d06/go.mod h1:9G6r8lI6V5b++XXqaQvumP/Ho0S/HUtKT0K1rYsx2U4=
+github.com/ottrec/scraper v0.0.0-20260617053659-f8e60d2d1db7 h1:8AxbCJOV2J75BOjmOWTzvoPJqPOy51OtrEV5jPd1LxI=
+github.com/ottrec/scraper v0.0.0-20260617053659-f8e60d2d1db7/go.mod h1:axOX9DkOQAdWiwOjC9+PTFG1corxutSFNlHMWjYWUtM=
+github.com/ottrec/website v0.0.0-20260617055150-d442ab543d8c h1:4sBmmhk/SIz/DY+F8qylHitpswd1UuB7g5mizfDi7rM=
+github.com/ottrec/website v0.0.0-20260617055150-d442ab543d8c/go.mod h1:mZp4CyOBJ+1V9LTkgwtNtoSBnsw4piYZnIdyYZTwkW8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=

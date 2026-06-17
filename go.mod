@@ -1,12 +1,12 @@
-module github.com/pgaskin/ottrec-misc
+module github.com/ottrec/misc
 
 go 1.26.2
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20260328224638-b7b298a31867
 	github.com/chromedp/chromedp v0.15.1
-	github.com/pgaskin/ottrec v0.0.0-20260615074830-539684fe76b5
-	github.com/pgaskin/ottrec-website v0.0.0-20260616024946-5344d4d91d06
+	github.com/ottrec/scraper v0.0.0-20260617053659-f8e60d2d1db7
+	github.com/ottrec/website v0.0.0-20260617055150-d442ab543d8c
 )
 
 require (
